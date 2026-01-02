@@ -10,7 +10,7 @@ import {
   createMovieSlug,
 } from "@/lib/tmdb";
 
-const MIN_WORDS = 50;
+const MIN_WORDS = 10;
 const MAX_WORDS = 500;
 const AUTOSAVE_KEY = "antiClimax_draft";
 
