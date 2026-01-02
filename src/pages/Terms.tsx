@@ -1,30 +1,40 @@
 export default function Terms() {
   return (
     <>
-      <title>Terms of Service - Anti Climax</title>
-      <meta name="description" content="Terms of Service for Anti Climax. Please read these terms carefully before using our platform." />
+      <title>Terms of Service - Lumiere</title>
+      <meta
+        name="description"
+        content="Terms of Service for Lumiere. Please read these terms carefully before using our platform."
+      />
 
       <div className="container max-w-3xl py-12">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold mb-8">Terms of Service</h1>
+        <h1 className="text-3xl md:text-4xl font-serif font-bold mb-8">
+          Terms of Service
+        </h1>
 
         <div className="prose prose-invert max-w-none space-y-6">
           <p className="text-muted-foreground">
-            Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+            Last updated:{" "}
+            {new Date().toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+            })}
           </p>
 
           <section className="glass-card p-6 space-y-4">
             <h2 className="text-xl font-semibold">Acceptance of Terms</h2>
             <p className="text-muted-foreground leading-relaxed">
-              By accessing or using Anti Climax, you agree to be bound by these Terms of Service. 
-              If you do not agree to these terms, please do not use our service.
+              By accessing or using Lumiere, you agree to be bound by these
+              Terms of Service. If you do not agree to these terms, please do
+              not use our service.
             </p>
           </section>
 
           <section className="glass-card p-6 space-y-4">
             <h2 className="text-xl font-semibold">User Accounts</h2>
             <p className="text-muted-foreground leading-relaxed">
-              To write alternate endings or vote on content, you must create an account. You are 
-              responsible for:
+              To write alternate endings or vote on content, you must create an
+              account. You are responsible for:
             </p>
             <ul className="list-disc list-inside text-muted-foreground space-y-2">
               <li>Maintaining the security of your account</li>
@@ -50,13 +60,14 @@ export default function Terms() {
           <section className="glass-card p-6 space-y-4">
             <h2 className="text-xl font-semibold">Intellectual Property</h2>
             <p className="text-muted-foreground leading-relaxed">
-              You retain ownership of the alternate endings you create. By posting content on 
-              Anti Climax, you grant us a non-exclusive, worldwide, royalty-free license to 
-              display your content on our platform.
+              You retain ownership of the alternate endings you create. By
+              posting content on Lumiere, you grant us a non-exclusive,
+              worldwide, royalty-free license to display your content on our
+              platform.
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Movie titles, posters, and related information are provided by TMDB and remain 
-              the property of their respective owners.
+              Movie titles, posters, and related information are provided by
+              TMDB and remain the property of their respective owners.
             </p>
           </section>
 
@@ -78,25 +89,26 @@ export default function Terms() {
           <section className="glass-card p-6 space-y-4">
             <h2 className="text-xl font-semibold">Termination</h2>
             <p className="text-muted-foreground leading-relaxed">
-              We reserve the right to suspend or terminate your account at any time for violations 
-              of these terms. You may also delete your account at any time through your account 
-              settings.
+              We reserve the right to suspend or terminate your account at any
+              time for violations of these terms. You may also delete your
+              account at any time through your account settings.
             </p>
           </section>
 
           <section className="glass-card p-6 space-y-4">
             <h2 className="text-xl font-semibold">Disclaimer</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Anti Climax is provided "as is" without warranties of any kind. We do not guarantee 
-              that the service will be uninterrupted or error-free.
+              Lumiere is provided "as is" without warranties of any kind. We do
+              not guarantee that the service will be uninterrupted or
+              error-free.
             </p>
           </section>
 
           <section className="glass-card p-6 space-y-4">
             <h2 className="text-xl font-semibold">Changes to Terms</h2>
             <p className="text-muted-foreground leading-relaxed">
-              We may update these terms from time to time. Continued use of the service after 
-              changes constitutes acceptance of the new terms.
+              We may update these terms from time to time. Continued use of the
+              service after changes constitutes acceptance of the new terms.
             </p>
           </section>
         </div>

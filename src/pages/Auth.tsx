@@ -4,15 +4,20 @@ import { useAuth } from "@/contexts/AuthContext";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Invalid email address");
-const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
-const displayNameSchema = z.string().min(2, "Display name must be at least 2 characters").max(50, "Display name must be less than 50 characters");
+const passwordSchema = z
+  .string()
+  .min(6, "Password must be at least 6 characters");
+const displayNameSchema = z
+  .string()
+  .min(2, "Display name must be at least 2 characters")
+  .max(50, "Display name must be less than 50 characters");
 
 export default function Auth() {
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
-  
+
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,7 +80,9 @@ export default function Auth() {
         const { error } = await signUp(email, password, displayName);
         if (error) {
           if (error.message.includes("User already registered")) {
-            setError("An account with this email already exists. Try signing in instead.");
+            setError(
+              "An account with this email already exists. Try signing in instead."
+            );
           } else {
             setError(error.message);
           }
@@ -90,14 +97,17 @@ export default function Auth() {
 
   return (
     <>
-      <title>{mode === "signin" ? "Sign In" : "Sign Up"} - Anti Climax</title>
-      <meta name="description" content="Sign in or create an account to write and vote on alternate movie endings." />
+      <title>{mode === "signin" ? "Sign In" : "Sign Up"} - Lumiere</title>
+      <meta
+        name="description"
+        content="Sign in or create an account to write and vote on alternate movie endings."
+      />
 
       <div className="min-h-[80vh] flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-serif font-bold text-gradient">
-              {mode === "signin" ? "Welcome Back" : "Join Anti Climax"}
+              {mode === "signin" ? "Welcome Back" : "Join Lumiere"}
             </h1>
             <p className="mt-2 text-muted-foreground">
               {mode === "signin"
@@ -109,7 +119,9 @@ export default function Auth() {
           <form onSubmit={handleSubmit} className="glass-card p-6 space-y-4">
             {mode === "signup" && (
               <div>
-                <label className="block text-sm font-medium mb-2">Display Name</label>
+                <label className="block text-sm font-medium mb-2">
+                  Display Name
+                </label>
                 <input
                   type="text"
                   value={displayName}

@@ -2,7 +2,13 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { searchMovies, getMovieById, TMDBMovie, getImageUrl, createMovieSlug } from "@/lib/tmdb";
+import {
+  searchMovies,
+  getMovieById,
+  TMDBMovie,
+  getImageUrl,
+  createMovieSlug,
+} from "@/lib/tmdb";
 
 const MIN_WORDS = 50;
 const MAX_WORDS = 500;
@@ -12,13 +18,13 @@ export default function Write() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
+
   const [selectedMovie, setSelectedMovie] = useState<TMDBMovie | null>(null);
   const [movieSearch, setMovieSearch] = useState("");
   const [movieResults, setMovieResults] = useState<TMDBMovie[]>([]);
   const [searchingMovies, setSearchingMovies] = useState(false);
   const [showMovieDropdown, setShowMovieDropdown] = useState(false);
-  
+
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -50,7 +56,7 @@ export default function Write() {
   useEffect(() => {
     const movieId = searchParams.get("movie");
     const movieTitle = searchParams.get("title");
-    
+
     if (movieId && movieTitle) {
       getMovieById(parseInt(movieId, 10)).then((movie) => {
         if (movie) setSelectedMovie(movie);
@@ -62,14 +68,17 @@ export default function Write() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (content || selectedMovie) {
-        localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({
-          content,
-          movieId: selectedMovie?.id,
-        }));
+        localStorage.setItem(
+          AUTOSAVE_KEY,
+          JSON.stringify({
+            content,
+            movieId: selectedMovie?.id,
+          })
+        );
         setLastSaved(new Date());
       }
     }, 1000);
-    
+
     return () => clearTimeout(timer);
   }, [content, selectedMovie]);
 
@@ -118,7 +127,9 @@ export default function Write() {
     }
 
     if (!isValidLength) {
-      setError(`Your ending must be between ${MIN_WORDS} and ${MAX_WORDS} words`);
+      setError(
+        `Your ending must be between ${MIN_WORDS} and ${MAX_WORDS} words`
+      );
       return;
     }
 
@@ -131,7 +142,7 @@ export default function Write() {
 
     try {
       const movieSlug = createMovieSlug(selectedMovie.id, selectedMovie.title);
-      
+
       const { error: insertError } = await supabase.from("climaxes").insert({
         movie_slug: movieSlug,
         movie_title: selectedMovie.title,
@@ -143,7 +154,7 @@ export default function Write() {
 
       // Clear draft
       localStorage.removeItem(AUTOSAVE_KEY);
-      
+
       // Navigate to movie page
       navigate(`/movie/${movieSlug}`);
     } catch (err: any) {
@@ -167,8 +178,11 @@ export default function Write() {
 
   return (
     <>
-      <title>Write an Alternate Ending - Anti Climax</title>
-      <meta name="description" content="Write your own alternate ending for a movie. Share your vision of how the story should have ended." />
+      <title>Write an Alternate Ending - Lumiere</title>
+      <meta
+        name="description"
+        content="Write your own alternate ending for a movie. Share your vision of how the story should have ended."
+      />
 
       <div className="container max-w-2xl py-8 md:py-12">
         <div className="mb-8">
@@ -181,8 +195,10 @@ export default function Write() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Movie Selection */}
           <div>
-            <label className="block text-sm font-medium mb-2">Select a Movie</label>
-            
+            <label className="block text-sm font-medium mb-2">
+              Select a Movie
+            </label>
+
             {selectedMovie ? (
               <div className="glass-card p-4 flex items-center gap-4">
                 {selectedMovie.poster_path && (
@@ -195,7 +211,9 @@ export default function Write() {
                 <div className="flex-1">
                   <p className="font-medium">{selectedMovie.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {selectedMovie.release_date ? new Date(selectedMovie.release_date).getFullYear() : ""}
+                    {selectedMovie.release_date
+                      ? new Date(selectedMovie.release_date).getFullYear()
+                      : ""}
                   </p>
                 </div>
                 <button
@@ -219,45 +237,62 @@ export default function Write() {
                   placeholder="Search for a movie..."
                   className="input-dark"
                 />
-                
-                {showMovieDropdown && (movieResults.length > 0 || searchingMovies) && (
-                  <div className="absolute z-10 w-full mt-2 glass-card overflow-hidden">
-                    {searchingMovies ? (
-                      <div className="p-4 text-center text-muted-foreground">
-                        Searching...
-                      </div>
-                    ) : (
-                      movieResults.map((movie) => (
-                        <button
-                          key={movie.id}
-                          type="button"
-                          onClick={() => handleSelectMovie(movie)}
-                          className="w-full p-3 flex items-center gap-3 hover:bg-secondary transition-colors text-left"
-                        >
-                          {movie.poster_path ? (
-                            <img
-                              src={getImageUrl(movie.poster_path, "w92") || ""}
-                              alt={movie.title}
-                              className="w-10 h-15 object-cover rounded"
-                            />
-                          ) : (
-                            <div className="w-10 h-15 bg-muted rounded flex items-center justify-center">
-                              <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4" />
-                              </svg>
+
+                {showMovieDropdown &&
+                  (movieResults.length > 0 || searchingMovies) && (
+                    <div className="absolute z-10 w-full mt-2 glass-card overflow-hidden">
+                      {searchingMovies ? (
+                        <div className="p-4 text-center text-muted-foreground">
+                          Searching...
+                        </div>
+                      ) : (
+                        movieResults.map((movie) => (
+                          <button
+                            key={movie.id}
+                            type="button"
+                            onClick={() => handleSelectMovie(movie)}
+                            className="w-full p-3 flex items-center gap-3 hover:bg-secondary transition-colors text-left"
+                          >
+                            {movie.poster_path ? (
+                              <img
+                                src={
+                                  getImageUrl(movie.poster_path, "w92") || ""
+                                }
+                                alt={movie.title}
+                                className="w-10 h-15 object-cover rounded"
+                              />
+                            ) : (
+                              <div className="w-10 h-15 bg-muted rounded flex items-center justify-center">
+                                <svg
+                                  className="w-5 h-5 text-muted-foreground"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+                            <div>
+                              <p className="font-medium text-sm">
+                                {movie.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {movie.release_date
+                                  ? new Date(movie.release_date).getFullYear()
+                                  : ""}
+                              </p>
                             </div>
-                          )}
-                          <div>
-                            <p className="font-medium text-sm">{movie.title}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {movie.release_date ? new Date(movie.release_date).getFullYear() : ""}
-                            </p>
-                          </div>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                )}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
               </div>
             )}
           </div>
@@ -265,16 +300,22 @@ export default function Write() {
           {/* Content */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">Your Alternate Ending</label>
-              <span className={`text-xs ${
-                wordCount < MIN_WORDS ? "text-muted-foreground" :
-                wordCount > MAX_WORDS ? "text-destructive" :
-                "text-primary"
-              }`}>
+              <label className="text-sm font-medium">
+                Your Alternate Ending
+              </label>
+              <span
+                className={`text-xs ${
+                  wordCount < MIN_WORDS
+                    ? "text-muted-foreground"
+                    : wordCount > MAX_WORDS
+                    ? "text-destructive"
+                    : "text-primary"
+                }`}
+              >
                 {wordCount} / {MAX_WORDS} words
               </span>
             </div>
-            
+
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -282,7 +323,7 @@ export default function Write() {
               rows={12}
               className="input-dark resize-none"
             />
-            
+
             <div className="flex items-center justify-between mt-2">
               <p className="text-xs text-muted-foreground">
                 Minimum {MIN_WORDS} words required
@@ -315,7 +356,7 @@ export default function Write() {
             >
               Clear Draft
             </button>
-            
+
             <button
               type="submit"
               disabled={submitting || !selectedMovie || !isValidLength}

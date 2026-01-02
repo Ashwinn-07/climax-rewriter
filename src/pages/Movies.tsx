@@ -1,5 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
-import { searchMovies, getPopularMovies, TMDBMovie, languageNames, getLanguageName } from "@/lib/tmdb";
+import {
+  searchMovies,
+  getPopularMovies,
+  TMDBMovie,
+  languageNames,
+  getLanguageName,
+  discoverMovies,
+} from "@/lib/tmdb";
 import { MovieCard } from "@/components/MovieCard";
 import { AdPlaceholder } from "@/components/AdPlaceholder";
 
@@ -11,6 +18,10 @@ export default function Movies() {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedLanguage]);
 
   // Debounce search query
   useEffect(() => {
@@ -28,8 +39,10 @@ export default function Movies() {
       try {
         const response = debouncedQuery
           ? await searchMovies(debouncedQuery, page)
+          : selectedLanguage
+          ? await discoverMovies(page, selectedLanguage)
           : await getPopularMovies(page);
-        
+
         setMovies(response.results);
         setTotalPages(Math.min(response.total_pages, 500)); // TMDB limits to 500 pages
       } catch (error) {
@@ -40,32 +53,30 @@ export default function Movies() {
     }
 
     loadMovies();
-  }, [debouncedQuery, page]);
+  }, [debouncedQuery, page, selectedLanguage]);
 
-  // Filter by language (client-side)
-  const filteredMovies = useMemo(() => {
-    if (!selectedLanguage) return movies;
-    return movies.filter((m) => m.original_language === selectedLanguage);
-  }, [movies, selectedLanguage]);
+  const allowedLanguages = ["en", "ml", "hi", "ta", "te", "ja", "es"];
 
-  // Get unique languages from current results
-  const availableLanguages = useMemo(() => {
-    const langs = new Set(movies.map((m) => m.original_language));
-    return Array.from(langs).sort((a, b) => 
-      getLanguageName(a).localeCompare(getLanguageName(b))
-    );
-  }, [movies]);
+  // Get unique languages from current results, filtered to allowed languages only
+  const availableLanguages = allowedLanguages;
 
   return (
     <>
-      <title>Browse Movies - Anti Climax</title>
-      <meta name="description" content="Browse thousands of movies and discover alternate endings written by our community of cinephiles." />
+      <title>Browse Movies - Lumiere</title>
+      <meta
+        name="description"
+        content="Browse thousands of movies and discover alternate endings written by our community of cinephiles."
+      />
 
       <div className="container py-8 md:py-12">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-serif font-bold">Browse Movies</h1>
-          <p className="mt-2 text-muted-foreground">Find a movie and write your alternate ending</p>
+          <h1 className="text-3xl md:text-4xl font-serif font-bold">
+            Browse Movies
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            Find a movie and write your alternate ending
+          </p>
         </div>
 
         {/* Search & Filters */}
@@ -77,7 +88,12 @@ export default function Movies() {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             <input
               type="text"
@@ -118,7 +134,7 @@ export default function Movies() {
               </div>
             ))}
           </div>
-        ) : filteredMovies.length === 0 ? (
+        ) : movies.length === 0 ? (
           <div className="text-center py-16">
             <svg
               className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4"
@@ -126,7 +142,12 @@ export default function Movies() {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+              />
             </svg>
             <p className="text-muted-foreground">No movies found</p>
             {selectedLanguage && (
@@ -140,7 +161,7 @@ export default function Movies() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-            {filteredMovies.map((movie) => (
+            {movies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
           </div>

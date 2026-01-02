@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getMovieById, TMDBMovie, getImageUrl, extractMovieId, getLanguageName, createMovieSlug } from "@/lib/tmdb";
+import {
+  getMovieById,
+  TMDBMovie,
+  getImageUrl,
+  extractMovieId,
+  getLanguageName,
+  createMovieSlug,
+} from "@/lib/tmdb";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ClimaxCard } from "@/components/ClimaxCard";
@@ -36,13 +43,21 @@ export default function Movie() {
     const climaxIds = climaxData.map((c) => c.id);
     const authorIds = [...new Set(climaxData.map((c) => c.author_id))];
 
-    const [votesResponse, profilesResponse, userVotesResponse] = await Promise.all([
-      supabase.from("votes").select("climax_id").in("climax_id", climaxIds),
-      supabase.from("profiles").select("id, display_name").in("id", authorIds),
-      user
-        ? supabase.from("votes").select("climax_id").eq("user_id", user.id).in("climax_id", climaxIds)
-        : Promise.resolve({ data: [] }),
-    ]);
+    const [votesResponse, profilesResponse, userVotesResponse] =
+      await Promise.all([
+        supabase.from("votes").select("climax_id").in("climax_id", climaxIds),
+        supabase
+          .from("profiles")
+          .select("id, display_name")
+          .in("id", authorIds),
+        user
+          ? supabase
+              .from("votes")
+              .select("climax_id")
+              .eq("user_id", user.id)
+              .in("climax_id", climaxIds)
+          : Promise.resolve({ data: [] }),
+      ]);
 
     const voteCounts: Record<string, number> = {};
     votesResponse.data?.forEach((v) => {
@@ -53,6 +68,7 @@ export default function Movie() {
     profilesResponse.data?.forEach((p) => {
       profiles[p.id] = p.display_name;
     });
+    console.log(profilesResponse.data);
 
     const userVotes = new Set(userVotesResponse.data?.map((v) => v.climax_id));
 
@@ -70,7 +86,7 @@ export default function Movie() {
   useEffect(() => {
     async function loadData() {
       if (!slug) return;
-      
+
       setLoading(true);
       try {
         const movieId = extractMovieId(slug);
@@ -118,19 +134,28 @@ export default function Movie() {
     return (
       <div className="container py-16 text-center">
         <h1 className="text-2xl font-serif font-bold mb-4">Movie Not Found</h1>
-        <p className="text-muted-foreground mb-8">The movie you're looking for doesn't exist.</p>
-        <Link to="/movies" className="btn-primary">Browse Movies</Link>
+        <p className="text-muted-foreground mb-8">
+          The movie you're looking for doesn't exist.
+        </p>
+        <Link to="/movies" className="btn-primary">
+          Browse Movies
+        </Link>
       </div>
     );
   }
 
   const posterUrl = getImageUrl(movie.poster_path, "w500");
-  const year = movie.release_date ? new Date(movie.release_date).getFullYear() : null;
+  const year = movie.release_date
+    ? new Date(movie.release_date).getFullYear()
+    : null;
 
   return (
     <>
-      <title>{movie.title} - Alternate Endings | Anti Climax</title>
-      <meta name="description" content={`Read and share alternate endings for ${movie.title}. Discover how other cinephiles would have ended this film.`} />
+      <title>{movie.title} - Alternate Endings | Lumiere</title>
+      <meta
+        name="description"
+        content={`Read and share alternate endings for ${movie.title}. Discover how other cinephiles would have ended this film.`}
+      />
 
       <div className="container py-8 md:py-12">
         {/* Movie Header */}
@@ -146,22 +171,29 @@ export default function Movie() {
           )}
 
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl font-serif font-bold">{movie.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold">
+              {movie.title}
+            </h1>
             <div className="mt-3 flex items-center justify-center md:justify-start gap-3 text-muted-foreground">
               {year && <span>{year}</span>}
-              {year && <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />}
+              {year && (
+                <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+              )}
               <span>{getLanguageName(movie.original_language)}</span>
             </div>
 
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
               <Link
-                to={`/write?movie=${movie.id}&title=${encodeURIComponent(movie.title)}`}
+                to={`/write?movie=${movie.id}&title=${encodeURIComponent(
+                  movie.title
+                )}`}
                 className="btn-primary"
               >
                 Write Your Ending
               </Link>
               <span className="text-sm text-muted-foreground">
-                {climaxes.length} alternate {climaxes.length === 1 ? "ending" : "endings"}
+                {climaxes.length} alternate{" "}
+                {climaxes.length === 1 ? "ending" : "endings"}
               </span>
             </div>
           </div>
@@ -174,13 +206,17 @@ export default function Movie() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-serif font-bold">Alternate Endings</h2>
-            
+
             {climaxes.length > 1 && (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground hidden sm:inline">Sort by:</span>
+                <span className="text-sm text-muted-foreground hidden sm:inline">
+                  Sort by:
+                </span>
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as "latest" | "votes")}
+                  onChange={(e) =>
+                    setSortBy(e.target.value as "latest" | "votes")
+                  }
                   className="input-dark py-2 text-sm"
                 >
                   <option value="votes">Most Voted</option>
@@ -198,12 +234,23 @@ export default function Movie() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
               </svg>
-              <h3 className="text-lg font-semibold mb-2">No Alternate Endings Yet</h3>
-              <p className="text-muted-foreground mb-6">Be the first to write an alternate ending for this movie!</p>
+              <h3 className="text-lg font-semibold mb-2">
+                No Alternate Endings Yet
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                Be the first to write an alternate ending for this movie!
+              </p>
               <Link
-                to={`/write?movie=${movie.id}&title=${encodeURIComponent(movie.title)}`}
+                to={`/write?movie=${movie.id}&title=${encodeURIComponent(
+                  movie.title
+                )}`}
                 className="btn-primary"
               >
                 Write the First Ending
@@ -221,7 +268,9 @@ export default function Movie() {
                   createdAt={climax.created_at}
                   voteCount={climax.vote_count}
                   hasVoted={climax.has_voted}
-                  onVoteChange={() => slug && loadClimaxes(slug).then(setClimaxes)}
+                  onVoteChange={() =>
+                    slug && loadClimaxes(slug).then(setClimaxes)
+                  }
                 />
               ))}
             </div>

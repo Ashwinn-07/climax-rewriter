@@ -87,6 +87,23 @@ export async function getMovieById(id: number): Promise<TMDBMovie | null> {
   return response.json();
 }
 
+export async function discoverMovies(
+  page: number = 1,
+  language?: string
+): Promise<TMDBSearchResponse> {
+  const langParam = language ? `&with_original_language=${language}` : "";
+
+  const response = await fetch(
+    `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}${langParam}&page=${page}&include_adult=false`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to discover movies");
+  }
+
+  return response.json();
+}
+
 // Language names mapping
 export const languageNames: Record<string, string> = {
   en: "English",
