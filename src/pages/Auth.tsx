@@ -129,7 +129,6 @@ export default function Auth() {
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Your public name"
                   className="input-dark"
-                  required
                 />
               </div>
             )}
@@ -142,7 +141,6 @@ export default function Auth() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 className="input-dark"
-                required
               />
             </div>
 
@@ -154,7 +152,6 @@ export default function Auth() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="input-dark"
-                required
                 minLength={6}
               />
             </div>
