@@ -107,12 +107,13 @@ export default function Auth() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-serif font-bold text-gradient">
-              {mode === "signin" ? "Welcome Back" : "Join Lumiere"}
+              {mode === "signin"
+                ? "Sign in to Lumiere"
+                : "Create your Lumiere account"}
             </h1>
             <p className="mt-2 text-muted-foreground">
-              {mode === "signin"
-                ? "Sign in to write and vote on alternate endings"
-                : "Create an account to share your alternate endings"}
+              Lumiere is a community platform where film lovers reimagine and
+              discuss movie stories.
             </p>
           </div>
 
@@ -176,7 +177,24 @@ export default function Auth() {
                 : "Create Account"}
             </button>
           </form>
-
+          <p className="mt-4 text-xs text-muted-foreground text-center">
+            This is the official Lumiere sign-in page. We never ask for your
+            password outside this website. Authentication is securely handled
+            using Supabase.
+          </p>
+          <div className="mt-4 text-center text-xs text-muted-foreground">
+            <span>
+              By continuing, you agree to Lumiere’s{" "}
+              <a href="/terms" className="underline hover:text-foreground">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="/privacy" className="underline hover:text-foreground">
+                Privacy Policy
+              </a>
+              .
+            </span>
+          </div>
           <div className="mt-6 text-center">
             <button
               type="button"
