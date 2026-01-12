@@ -15,6 +15,11 @@
     <loc>https://lumiereofficial.online/about</loc>
     <priority>0.8</priority>
   </url>
+  
+  <url>
+    <loc>https://lumiereofficial.online/why-endings-matter</loc>
+    <priority>0.8</priority>
+  </url>
 
   <url>
     <loc>https://lumiereofficial.online/privacy</loc>

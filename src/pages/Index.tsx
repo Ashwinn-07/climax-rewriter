@@ -5,18 +5,35 @@ import { MovieCard } from "@/components/MovieCard";
 import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { supabase } from "@/integrations/supabase/client";
 
+interface RecentClimax {
+  id: string;
+  content: string;
+  movie_slug: string;
+  movie_title: string;
+  created_at: string;
+}
+
 export default function Index() {
   const [featuredMovies, setFeaturedMovies] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(true);
   const [climaxCounts, setClimaxCounts] = useState<Record<string, number>>({});
+  const [recentClimaxes, setRecentClimaxes] = useState<RecentClimax[]>([]);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [moviesResponse, climaxesResponse] = await Promise.all([
-          getPopularMovies(),
-          supabase.from("climaxes").select("movie_slug"),
-        ]);
+        const [moviesResponse, climaxesResponse, recentClimaxesResponse] =
+          await Promise.all([
+            getPopularMovies(),
+            supabase.from("climaxes").select("movie_slug"),
+            supabase
+              .from("climaxes")
+              .select("id, content, movie_slug, movie_title, created_at")
+              .order("created_at", { ascending: false })
+              .limit(6),
+          ]);
+
+        setRecentClimaxes(recentClimaxesResponse.data || []);
 
         setFeaturedMovies(moviesResponse.results.slice(0, 8));
 
@@ -211,6 +228,37 @@ export default function Index() {
           </svg>
         </Link>
       </section>
+
+      {/* Latest Community Endings */}
+      {recentClimaxes.length > 0 && (
+        <section className="container py-16 border-t border-border/50">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold mb-8">
+            Latest Community Endings
+          </h2>
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            {recentClimaxes.map((climax) => (
+              <Link
+                key={climax.id}
+                to={`/movie/${climax.movie_slug}`}
+                className="block glass-card p-6 hover:border-primary/40 transition-colors h-full"
+              >
+                <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                  {climax.movie_title}
+                </p>
+
+                <p className="text-foreground line-clamp-4 leading-relaxed">
+                  {climax.content}
+                </p>
+
+                <p className="mt-4 text-sm text-primary hover:underline">
+                  Read full ending →
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* How it Works */}
       <section className="container py-16 border-t border-border/50">

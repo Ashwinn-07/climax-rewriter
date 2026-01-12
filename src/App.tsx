@@ -15,6 +15,7 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import About from "./pages/About";
+import WhyEndingsMatter from "./pages/WhyEndingsMatter";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/why-endings-matter" element={<WhyEndingsMatter />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

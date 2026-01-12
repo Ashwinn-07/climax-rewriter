@@ -215,6 +215,15 @@ export function Layout({ children }: LayoutProps) {
                 </li>
                 <li>
                   <Link
+                    to="/why-endings-matter"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Why Endings Matter
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
                     to="/privacy"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
