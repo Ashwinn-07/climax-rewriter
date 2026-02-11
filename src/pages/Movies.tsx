@@ -119,7 +119,7 @@ export default function Movies() {
         </div>
 
         {/* Ad */}
-        <AdPlaceholder size="leaderboard" className="mb-8" />
+        {/* <AdPlaceholder size="leaderboard" className="mb-8" /> */}
 
         {/* Results */}
         {loading ? (

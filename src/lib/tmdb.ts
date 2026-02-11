@@ -1,7 +1,7 @@
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p";
-
+import { getCache, setCache } from "./tmdbCache";
 export interface TMDBMovie {
   id: number;
   title: string;
@@ -61,18 +61,26 @@ export async function searchMovies(
   return response.json();
 }
 
-export async function getPopularMovies(
-  page: number = 1
-): Promise<TMDBSearchResponse> {
-  const response = await fetch(
+export async function getPopularMovies(page = 1) {
+  const cacheKey = `tmdb_popular_page_${page}`;
+
+  const cached = getCache<any>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const res = await fetch(
     `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${page}`
   );
 
-  if (!response.ok) {
+  if (!res.ok) {
     throw new Error("Failed to fetch popular movies");
   }
 
-  return response.json();
+  const data = await res.json();
+  setCache(cacheKey, data);
+
+  return data;
 }
 
 export async function getMovieById(id: number): Promise<TMDBMovie | null> {
@@ -87,21 +95,26 @@ export async function getMovieById(id: number): Promise<TMDBMovie | null> {
   return response.json();
 }
 
-export async function discoverMovies(
-  page: number = 1,
-  language?: string
-): Promise<TMDBSearchResponse> {
-  const langParam = language ? `&with_original_language=${language}` : "";
+export async function discoverMovies(page = 1, language = "") {
+  const cacheKey = `tmdb_discover_${language}_page_${page}`;
 
-  const response = await fetch(
-    `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}${langParam}&page=${page}&include_adult=false`
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to discover movies");
+  const cached = getCache<any>(cacheKey);
+  if (cached) {
+    return cached;
   }
 
-  return response.json();
+  const res = await fetch(
+    `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_original_language=${language}&page=${page}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch discover movies");
+  }
+
+  const data = await res.json();
+  setCache(cacheKey, data);
+
+  return data;
 }
 
 // Language names mapping

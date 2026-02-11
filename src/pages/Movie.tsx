@@ -200,7 +200,7 @@ export default function Movie() {
         </div>
 
         {/* Ad */}
-        <AdPlaceholder size="leaderboard" className="mb-8" />
+        {/* <AdPlaceholder size="leaderboard" className="mb-8" /> */}
 
         {/* Climaxes Section */}
         <section>
@@ -242,7 +242,7 @@ export default function Movie() {
                 />
               </svg>
               <h3 className="text-lg font-semibold mb-2">
-                No Alternate Endings Yet
+                This movie hasn’t been reimagined yet by the community.
               </h3>
               <p className="text-muted-foreground mb-6">
                 Be the first to write an alternate ending for this movie!
@@ -278,7 +278,7 @@ export default function Movie() {
         </section>
 
         {/* Bottom Ad */}
-        <AdPlaceholder size="rectangle" className="mt-12 max-w-md mx-auto" />
+        {/* <AdPlaceholder size="rectangle" className="mt-12 max-w-md mx-auto" /> */}
       </div>
     </>
   );

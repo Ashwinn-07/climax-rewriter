@@ -136,10 +136,24 @@ export default function Index() {
         </div> */}
       </section>
 
-      {/* Ad Banner */}
-      <section className="container py-8">
-        <AdPlaceholder size="leaderboard" />
+      {/* Intro Editorial Section */}
+      <section className="container py-10 max-w-3xl">
+        <div className="border-l-4 border-primary/40 pl-5">
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+            Lumiere is a community-driven space for film lovers who enjoy
+            reflecting on stories beyond the screen. Here, viewers explore
+            alternate story paths, emotional resolutions, and narrative
+            possibilities that might have unfolded differently. By reimagining
+            key moments, especially endings, Lumiere celebrates the personal
+            connection audiences form with cinema.
+          </p>
+        </div>
       </section>
+
+      {/* Ad Banner */}
+      {/* <section className="container py-8">
+        <AdPlaceholder size="leaderboard" />
+      </section> */}
 
       {/* Featured Movies */}
       <section className="container py-16">
@@ -360,9 +374,9 @@ export default function Index() {
       </section> */}
 
       {/* Bottom Ad */}
-      <section className="container pb-16">
+      {/* <section className="container pb-16">
         <AdPlaceholder size="rectangle" className="max-w-md mx-auto" />
-      </section>
+      </section> */}
     </>
   );
 }
