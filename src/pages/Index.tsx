@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getPopularMovies, TMDBMovie } from "@/lib/tmdb";
 import { MovieCard } from "@/components/MovieCard";
-import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { supabase } from "@/integrations/supabase/client";
+import Aurora from "@/components/landing/Aurora";
 
 interface RecentClimax {
   id: string;
@@ -64,10 +64,17 @@ export default function Index() {
 
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+        {/* Aurora Background */}
+        <div className="absolute inset-0 opacity-100">
+          <Aurora
+            colorStops={['#3b0764', '#00e5ff', '#c084fc']}
+            amplitude={3.5}
+            blend={0.6}
+            speed={0.5}
+          />
+        </div>
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
 
         <div className="container relative z-10 text-center px-4">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold leading-tight animate-fade-in-up">
@@ -117,27 +124,10 @@ export default function Index() {
             </div>
           </div>
         </div>
-
-        {/* Scroll indicator */}
-        {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <svg
-            className="w-6 h-6 text-muted-foreground"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
-        </div> */}
       </section>
 
       {/* Intro Editorial Section */}
-      <section className="container py-10 max-w-3xl">
+      <section className="container py-10 max-w-3xl animate-fade-in-up">
         <div className="border-l-4 border-primary/40 pl-5">
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
             Lumiere is a community-driven space for film lovers who enjoy
@@ -149,11 +139,6 @@ export default function Index() {
           </p>
         </div>
       </section>
-
-      {/* Ad Banner */}
-      {/* <section className="container py-8">
-        <AdPlaceholder size="leaderboard" />
-      </section> */}
 
       {/* Featured Movies */}
       <section className="container py-16">
@@ -205,6 +190,7 @@ export default function Index() {
               <div
                 key={movie.id}
                 className={`animate-fade-in-up stagger-${(index % 4) + 1}`}
+                style={{ animationDelay: `${index * 0.08}s` }}
               >
                 <MovieCard
                   movie={movie}
@@ -251,11 +237,12 @@ export default function Index() {
           </h2>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            {recentClimaxes.map((climax) => (
+            {recentClimaxes.map((climax, index) => (
               <Link
                 key={climax.id}
                 to={`/movie/${climax.movie_slug}`}
-                className="block glass-card p-6 hover:border-primary/40 transition-colors h-full"
+                className="block glass-card p-6 hover:border-primary/40 transition-all duration-300 h-full hover:-translate-y-1"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
                   {climax.movie_title}
@@ -281,8 +268,8 @@ export default function Index() {
         </h2>
 
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="glass-card p-6 text-center animate-fade-in-up stagger-1">
-            <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4">
+          <div className="glass-card p-6 text-center animate-fade-in-up stagger-1 hover:-translate-y-2 transition-transform duration-300">
+            <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4 border border-primary/20">
               <svg
                 className="w-7 h-7 text-primary"
                 fill="none"
@@ -304,8 +291,8 @@ export default function Index() {
             </p>
           </div>
 
-          <div className="glass-card p-6 text-center animate-fade-in-up stagger-2">
-            <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4">
+          <div className="glass-card p-6 text-center animate-fade-in-up stagger-2 hover:-translate-y-2 transition-transform duration-300">
+            <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4 border border-primary/20">
               <svg
                 className="w-7 h-7 text-primary"
                 fill="none"
@@ -322,13 +309,13 @@ export default function Index() {
             </div>
             <h3 className="text-lg font-semibold mb-2">Write Your Climax</h3>
             <p className="text-sm text-muted-foreground">
-              Craft your own alternate ending. Be creative,fix what it got
+              Craft your own alternate ending. Be creative, fix what it got
               wrong.
             </p>
           </div>
 
-          <div className="glass-card p-6 text-center animate-fade-in-up stagger-3">
-            <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4">
+          <div className="glass-card p-6 text-center animate-fade-in-up stagger-3 hover:-translate-y-2 transition-transform duration-300">
+            <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4 border border-primary/20">
               <svg
                 className="w-7 h-7 text-primary"
                 fill="none"
@@ -351,32 +338,6 @@ export default function Index() {
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      {/* <section className="container py-16">
-        <div className="glass-card p-8 md:p-12 text-center relative overflow-hidden"> */}
-      {/* Glow effects */}
-      {/* <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
-          
-          <div className="relative z-10">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">
-              Ready to Rewrite Cinema History?
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-              Join thousands of cinephiles sharing their alternate visions for beloved films.
-            </p>
-            <Link to="/auth" className="btn-primary text-base px-8 py-4 animate-pulse-glow">
-              Get Started Free
-            </Link>
-          </div> */}
-      {/* </div>
-      </section> */}
-
-      {/* Bottom Ad */}
-      {/* <section className="container pb-16">
-        <AdPlaceholder size="rectangle" className="max-w-md mx-auto" />
-      </section> */}
     </>
   );
 }

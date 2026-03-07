@@ -1,165 +1,27 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import Navbar from "@/components/Navbar";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
-  const { user, signOut } = useAuth();
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isLandingPage = location.pathname === "/";
 
-  const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/movies", label: "Movies" },
-  ];
-
-  const isActive = (path: string) => location.pathname === path;
+  // Landing page renders its own content (with navbar included at top level)
+  if (isLandingPage) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col film-grain">
-      {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-lg bg-background/80 border-b border-border/50">
-        <div className="container flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 group">
-            <span className="text-3xl font-serif font-bold tracking-tight text-gradient">
-              Lumiere
-            </span>
-          </Link>
+      {/* Unified Navbar */}
+      <Navbar />
 
-          <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`text-sm font-medium transition-colors link-underline ${
-                  isActive(link.href)
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-3">
-            {user ? (
-              <Link
-                to="/write"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Write
-              </Link>
-            ) : null}
-
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen((v) => !v)}
-              className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/40 transition"
-              aria-label="Open menu"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </button>
-
-            {/* Desktop actions */}
-            <div className="hidden md:flex items-center gap-4">
-              {user ? (
-                <>
-                  <Link
-                    to="/my-climaxes"
-                    className={`text-sm font-medium ${
-                      isActive("/my-climaxes")
-                        ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    My Climaxes
-                  </Link>
-                  <button onClick={signOut} className="btn-ghost text-sm">
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/auth"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Sign in
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile nav */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-b border-border/50 bg-background/95 backdrop-blur">
-            <div className="container py-4 space-y-4">
-              <Link
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-medium"
-              >
-                Home
-              </Link>
-
-              <Link
-                to="/movies"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-medium"
-              >
-                Movies
-              </Link>
-
-              {user && (
-                <Link
-                  to="/my-climaxes"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm font-medium"
-                >
-                  My Climaxes
-                </Link>
-              )}
-
-              {!user ? (
-                <Link
-                  to="/auth"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm font-medium"
-                >
-                  Sign in
-                </Link>
-              ) : (
-                <button
-                  onClick={() => {
-                    signOut();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="block text-sm font-medium text-left"
-                >
-                  Sign out
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
+      {/* Spacer for fixed navbar */}
+      <div className="h-20" />
 
       {/* Main content */}
       <main className="flex-1">{children}</main>

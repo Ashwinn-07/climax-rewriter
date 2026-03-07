@@ -4,6 +4,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
 
 import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
 import Movies from "./pages/Movies";
 import Movie from "./pages/Movie";
 import Write from "./pages/Write";
@@ -26,7 +27,8 @@ const App = () => (
         <ScrollToTop />
         <Layout>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<Index />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/movie/:slug" element={<Movie />} />
             <Route path="/write" element={<Write />} />
