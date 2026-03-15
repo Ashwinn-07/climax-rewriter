@@ -108,6 +108,9 @@ void main() {
 }
 `;
 
+// Detect mobile once at module level
+const isMobile = typeof window !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
 interface AuroraProps {
   colorStops?: string[];
   amplitude?: number;
@@ -127,10 +130,14 @@ export default function Aurora(props: AuroraProps) {
     const ctn = ctnDom.current;
     if (!ctn) return;
 
+    // Cap DPR: 1 on mobile, 1.5 on desktop (saves massive GPU work)
+    const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
+
     const renderer = new Renderer({
       alpha: true,
       premultipliedAlpha: true,
-      antialias: true
+      antialias: false, // Disable AA for perf (full-screen shader doesn't need it)
+      dpr,
     });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -146,7 +153,7 @@ export default function Aurora(props: AuroraProps) {
       const height = ctn.offsetHeight;
       renderer.setSize(width, height);
       if (program) {
-        program.uniforms.uResolution.value = [width, height];
+        program.uniforms.uResolution.value = [width * dpr, height * dpr];
       }
     }
     window.addEventListener('resize', resize);
@@ -156,6 +163,7 @@ export default function Aurora(props: AuroraProps) {
       delete (geometry as any).attributes.uv;
     }
 
+    // Pre-compute color stops once (was re-created every frame!)
     const colorStopsArray = colorStops.map(hex => {
       const c = new Color(hex);
       return [c.r, c.g, c.b];
@@ -168,7 +176,7 @@ export default function Aurora(props: AuroraProps) {
         uTime: { value: 0 },
         uAmplitude: { value: amplitude },
         uColorStops: { value: colorStopsArray },
-        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+        uResolution: { value: [ctn.offsetWidth * dpr, ctn.offsetHeight * dpr] },
         uBlend: { value: blend }
       }
     });
@@ -176,18 +184,41 @@ export default function Aurora(props: AuroraProps) {
     const mesh = new Mesh(gl, { geometry, program });
     ctn.appendChild(gl.canvas as HTMLCanvasElement);
 
+    // Visibility gating: pause rAF when off-screen
+    let isVisible = true;
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 }
+    );
+    observer.observe(ctn);
+
+    // Cache color arrays to avoid creating Color objects every frame
+    let cachedStops = colorStops;
+    let cachedStopsArray = colorStopsArray;
+
     let animateId = 0;
     const update = (t: number) => {
       animateId = requestAnimationFrame(update);
+
+      // Skip rendering when off-screen
+      if (!isVisible) return;
+
       const { time = t * 0.01, speed = 1.0 } = propsRef.current;
       program.uniforms.uTime.value = time * speed * 0.1;
       program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
       program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
-      const stops = propsRef.current.colorStops ?? colorStops;
-      program.uniforms.uColorStops.value = stops.map(hex => {
-        const c = new Color(hex);
-        return [c.r, c.g, c.b];
-      });
+
+      // Only recompute colors if props changed
+      const currentStops = propsRef.current.colorStops ?? colorStops;
+      if (currentStops !== cachedStops) {
+        cachedStops = currentStops;
+        cachedStopsArray = currentStops.map(hex => {
+          const c = new Color(hex);
+          return [c.r, c.g, c.b];
+        });
+      }
+      program.uniforms.uColorStops.value = cachedStopsArray;
+
       renderer.render({ scene: mesh });
     };
     animateId = requestAnimationFrame(update);
@@ -196,6 +227,7 @@ export default function Aurora(props: AuroraProps) {
 
     return () => {
       cancelAnimationFrame(animateId);
+      observer.disconnect();
       window.removeEventListener('resize', resize);
       const canvas = gl.canvas as HTMLCanvasElement;
       if (ctn && canvas.parentNode === ctn) {

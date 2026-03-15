@@ -99,6 +99,9 @@ void main(){
 }
 `;
 
+// Detect mobile once at module level
+const isMobile = typeof window !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
 interface GrainientProps {
   timeSpeed?: number;
   colorBalance?: number;
@@ -155,10 +158,13 @@ const Grainient = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // Cap DPR: 1 on mobile, 1.5 on desktop
+    const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
+
     const renderer = new Renderer({
       alpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
+      dpr,
     });
 
     const gl = renderer.gl;
@@ -217,23 +223,35 @@ const Grainient = ({
     ro.observe(container);
     setSize();
 
+    // Visibility gating: pause rAF when off-screen
+    let isVisible = true;
+    const visObserver = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 }
+    );
+    visObserver.observe(container);
+
     let raf = 0;
     const t0 = performance.now();
     const loop = (t: number) => {
+      raf = requestAnimationFrame(loop);
+      // Skip rendering when off-screen
+      if (!isVisible) return;
       program.uniforms.iTime.value = (t - t0) * 0.001;
       renderer.render({ scene: mesh });
-      raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      visObserver.disconnect();
       try {
         container.removeChild(canvas);
       } catch {
         // Ignore
       }
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, [
     timeSpeed, colorBalance, warpStrength, warpFrequency, warpSpeed,

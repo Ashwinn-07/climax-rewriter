@@ -5,6 +5,9 @@ import './ScrollReveal.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Detect mobile once at module level
+const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+
 interface ScrollRevealProps {
   children: string;
   scrollContainerRef?: RefObject<HTMLElement>;
@@ -69,9 +72,10 @@ const ScrollReveal = ({
 
     const wordElements = el.querySelectorAll('.word');
 
+    // Use opacity only (no will-change to avoid permanent GPU layer promotion)
     const opacTween = gsap.fromTo(
       wordElements,
-      { opacity: baseOpacity, willChange: 'opacity' },
+      { opacity: baseOpacity },
       {
         ease: 'none',
         opacity: 1,
@@ -86,7 +90,8 @@ const ScrollReveal = ({
       }
     );
 
-    if (enableBlur) {
+    // Only animate blur on desktop — filter: blur() is extremely expensive on mobile GPUs
+    if (enableBlur && !isMobile) {
       gsap.fromTo(
         wordElements,
         { filter: `blur(${blurStrength}px)` },

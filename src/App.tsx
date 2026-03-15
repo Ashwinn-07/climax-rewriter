@@ -1,22 +1,23 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
-
-import Index from "./pages/Index";
-import LandingPage from "./pages/LandingPage";
-import Movies from "./pages/Movies";
-import Movie from "./pages/Movie";
-import Write from "./pages/Write";
-import MyClimaxes from "./pages/MyClimaxes";
-import Auth from "./pages/Auth";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
-import About from "./pages/About";
-import WhyEndingsMatter from "./pages/WhyEndingsMatter";
+
+const Index = lazy(() => import("./pages/Index"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const Movies = lazy(() => import("./pages/Movies"));
+const Movie = lazy(() => import("./pages/Movie"));
+const Write = lazy(() => import("./pages/Write"));
+const MyClimaxes = lazy(() => import("./pages/MyClimaxes"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const About = lazy(() => import("./pages/About"));
+const WhyEndingsMatter = lazy(() => import("./pages/WhyEndingsMatter"));
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,8 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <Layout>
-          <Routes>
+          <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
+            <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/home" element={<Index />} />
             <Route path="/movies" element={<Movies />} />
@@ -41,6 +43,7 @@ const App = () => (
             <Route path="/why-endings-matter" element={<WhyEndingsMatter />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </Layout>
       </BrowserRouter>
     </AuthProvider>

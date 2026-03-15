@@ -254,6 +254,15 @@
   margin: 0 auto;
 }
 
+/* Browser rendering optimization: skip layout/paint for off-screen sections */
+.landing-section,
+.landing-editorial,
+.landing-cta,
+.landing-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
 .landing-section-label {
   display: inline-flex;
   align-items: center;
